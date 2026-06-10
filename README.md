@@ -5,6 +5,8 @@
 
 Export komoot tours as GPX files from the command line — no subscription needed.
 
+No CLI at hand? Use the web app: **[scorphus.github.io/komootloose](https://scorphus.github.io/komootloose/)** — runs entirely in your browser.
+
 ## Installation
 
 ```sh
