@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
-"""Export a public komoot tour as GPX from the command line.
+"""Export komoot tours as GPX from the command line.
 
 Usage:
-    gpxport.py TOUR [TOUR ...]
-    gpxport.py 123456
-    gpxport.py https://www.komoot.com/tour/123456
-    gpxport.py https://www.komoot.com/smarttour/123456 -o route.gpx
+    komootloose TOUR [TOUR ...]
+    komootloose 123456
+    komootloose https://www.komoot.com/tour/123456
+    komootloose https://www.komoot.com/smarttour/123456 -o route.gpx
 
 TOUR is a numeric tour ID or a komoot tour/smarttour URL.
 """
@@ -38,7 +37,7 @@ def coords_to_gpx(coords):
         for c in coords
     )
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<gpx version="1.1" creator="komootGPXport" xmlns="http://www.topografix.com/GPX/1/1">
+<gpx version="1.1" creator="komootloose" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata></metadata>
   <rte>
   {points}

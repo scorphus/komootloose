@@ -1,0 +1,18 @@
+[project]
+name = "komootloose"
+version = "0.1.0"
+description = "Export komoot tours as GPX files from the command line."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "BSD-3-Clause"
+dependencies = []
+
+[project.scripts]
+komootloose = "komootloose:main"
+
+[dependency-groups]
+dev = ["pytest"]
+
+[build-system]
+requires = ["uv_build>=0.11,<0.13"]
+build-backend = "uv_build"
