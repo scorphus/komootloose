@@ -2,6 +2,13 @@
 
 Export komoot tours as GPX files from the command line — no subscription needed.
 
+## Installation
+
+```sh
+uv tool install komootloose
+```
+
+Or `pipx install komootloose`, or `pip install komootloose`.
 
 ## Usage
 
