@@ -1,10 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 140">
-  <style>
-    .name { fill: #2D2D32; }
-    @media (prefers-color-scheme: dark) {
-      .name { fill: #F2F2F4; }
-    }
-  </style>
+  <!-- reference as logo-wordmark.svg#dark to get light text for dark backgrounds -->
+  <style>#dark:target ~ text { fill: #F2F2F4; }</style>
+  <g id="dark"/>
   <!-- the badge, scaled down -->
   <g transform="translate(20 10) scale(0.46875)">
     <rect width="256" height="256" rx="56" fill="#FC4C02"/>
@@ -20,6 +17,6 @@
   </g>
   <!-- shaken-loose wordmark -->
   <text x="170" y="88" font-family="Avenir Next, Futura, Helvetica Neue, Arial, sans-serif"
-        font-weight="700" font-size="64" letter-spacing="-1" class="name">komoot<tspan
+        font-weight="700" font-size="64" letter-spacing="-1" fill="#2D2D32">komoot<tspan
         fill="#FC4C02" rotate="-7 5 -4 8 -5" dx="2 4 3 4 3" dy="0 -6 5 -4 7">loose</tspan></text>
 </svg>

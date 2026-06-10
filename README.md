@@ -1,4 +1,7 @@
-<img src="https://raw.githubusercontent.com/scorphus/komootloose/main/assets/logo-wordmark.svg" alt="komootloose" width="520">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/scorphus/komootloose/main/assets/logo-wordmark.svg#dark">
+  <img src="https://raw.githubusercontent.com/scorphus/komootloose/main/assets/logo-wordmark.svg" alt="komootloose" width="520">
+</picture>
 
 Export komoot tours as GPX files from the command line — no subscription needed.
 
