@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#161513">
+<title>komootloose — cut your tours loose</title>
+<meta name="description" content="Export komoot tours as GPX, right from your browser. No subscription, no install.">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="56" fill="%23FC4C02"/><path d="M62 146 v-20 a26 26 0 0 1 45 -18" fill="none" stroke="%23fff" stroke-width="13" stroke-linecap="round"/><rect x="44" y="146" width="68" height="56" rx="12" fill="%23fff"/><path d="M118 164 C 152 184, 184 166, 172 138 C 162 114, 128 116, 136 142 C 145 170, 190 158, 198 124 C 202 108, 198 98, 203 90" fill="none" stroke="%23fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="0.1 17"/><path d="M205 38 c-13 0 -23 10 -23 22 c0 15 23 38 23 38 s23 -23 23 -38 c0 -12 -10 -22 -23 -22 z" fill="%23fff"/></svg>'>
+<style>
+:root{
+  --orange:#FC4C02; --orange-glow:#ff6a24;
+  --night:#161513; --panel:#201e1b; --line:#332f2a;
+  --ink:#f2f0ec; --dim:#9b948a;
+}
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  min-height:100svh; display:flex; flex-direction:column; align-items:center;
+  background:var(--night); color:var(--ink);
+  font:17px/1.5 "Avenir Next","Helvetica Neue",Helvetica,Arial,sans-serif;
+  padding:24px 20px 32px; overflow-x:hidden;
+}
+/* faint topo contours */
+body::before{
+  content:""; position:fixed; inset:-20%; z-index:-1; pointer-events:none;
+  background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="560" height="560" viewBox="0 0 560 560"><g fill="none" stroke="%23FC4C02" stroke-opacity=".05" stroke-width="1.4"><path d="M-20 120 C 120 40, 220 200, 380 120 S 560 60, 600 140"/><path d="M-20 180 C 120 100, 230 260, 390 180 S 560 120, 600 200"/><path d="M-20 250 C 130 170, 240 330, 400 250 S 570 190, 610 270"/><path d="M-20 330 C 130 250, 250 410, 410 330 S 570 270, 610 350"/><path d="M-20 420 C 140 340, 260 500, 420 420 S 580 360, 620 440"/><path d="M-20 510 C 140 430, 270 580, 430 510 S 580 450, 620 530"/></g></svg>');
+  background-size:560px 560px;
+}
+main{width:100%;max-width:480px;display:flex;flex-direction:column;gap:28px}
+header{display:flex;align-items:center;gap:14px;animation:rise .5s ease both}
+header svg{width:56px;height:56px;flex:none;filter:drop-shadow(0 6px 18px rgba(252,76,2,.35))}
+h1{
+  font-family:Futura,"Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-size:30px; font-weight:700; letter-spacing:-.5px; line-height:1;
+}
+h1 b{color:var(--orange);font-weight:700;display:inline-block}
+h1 b span{display:inline-block}
+h1 b span:nth-child(1){transform:rotate(-7deg) translateY(-1px)}
+h1 b span:nth-child(2){transform:rotate(5deg) translateY(2px)}
+h1 b span:nth-child(3){transform:rotate(-4deg) translateY(-2px)}
+h1 b span:nth-child(4){transform:rotate(8deg) translateY(1px)}
+h1 b span:nth-child(5){transform:rotate(-5deg) translateY(-1px)}
+header p{color:var(--dim);font-size:13.5px;margin-top:4px}
+form{display:flex;flex-direction:column;gap:12px;animation:rise .5s .08s ease both}
+label{
+  font-family:Futura,"Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);
+}
+input{
+  width:100%;padding:16px;font:inherit;font-size:16px;color:var(--ink);
+  background:var(--panel);border:1.5px solid var(--line);border-radius:14px;
+  outline:none;transition:border-color .2s, box-shadow .2s;
+}
+input::placeholder{color:#6e675e}
+input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(252,76,2,.22)}
+button{
+  font-family:Futura,"Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-size:17px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:16px;border:none;border-radius:14px;cursor:pointer;
+  color:#fff;background:linear-gradient(180deg,var(--orange-glow),var(--orange));
+  box-shadow:0 8px 24px rgba(252,76,2,.35);
+  transition:transform .12s, box-shadow .12s, filter .2s;
+}
+button:active{transform:scale(.97);box-shadow:0 4px 12px rgba(252,76,2,.3)}
+button:disabled{filter:grayscale(.6) brightness(.7);cursor:wait}
+#status{min-height:24px}
+/* marching trail dots */
+.trail{display:flex;gap:10px;align-items:center;padding:6px 2px}
+.trail i{width:9px;height:9px;border-radius:50%;background:var(--orange);animation:march 1s infinite}
+.trail i:nth-child(2){animation-delay:.12s}.trail i:nth-child(3){animation-delay:.24s}
+.trail i:nth-child(4){animation-delay:.36s}.trail i:nth-child(5){animation-delay:.48s}
+.trail span{color:var(--dim);font-size:14px;margin-left:6px}
+@keyframes march{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.error{
+  color:#ffb39a;background:rgba(252,76,2,.1);border:1px solid rgba(252,76,2,.35);
+  border-radius:12px;padding:12px 14px;font-size:15px;animation:rise .3s ease both;
+}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:20px;display:flex;flex-direction:column;gap:14px;animation:rise .4s ease both;
+}
+.card h2{font-size:20px;line-height:1.25;font-weight:600}
+.meta{display:flex;gap:18px;color:var(--dim);font-size:13.5px}
+.meta b{color:var(--ink);font-weight:600}
+.card a.dl{
+  text-align:center;text-decoration:none;color:#fff;
+  font-family:Futura,"Avenir Next Condensed","Trebuchet MS",sans-serif;
+  font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;
+  padding:15px;border-radius:13px;
+  background:linear-gradient(180deg,var(--orange-glow),var(--orange));
+  box-shadow:0 8px 24px rgba(252,76,2,.35);transition:transform .12s;
+}
+.card a.dl:active{transform:scale(.97)}
+footer{
+  margin-top:auto;padding-top:36px;color:#6e675e;font-size:12.5px;text-align:center;
+  animation:rise .5s .16s ease both;
+}
+footer a{color:var(--dim)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <svg viewBox="0 0 256 256" aria-hidden="true">
+      <rect width="256" height="256" rx="56" fill="#FC4C02"/>
+      <path d="M62 146 v-20 a26 26 0 0 1 45 -18" fill="none" stroke="#fff" stroke-width="13" stroke-linecap="round"/>
+      <rect x="44" y="146" width="68" height="56" rx="12" fill="#fff"/>
+      <circle cx="78" cy="168" r="8" fill="#FC4C02"/>
+      <rect x="74" y="172" width="8" height="14" rx="4" fill="#FC4C02"/>
+      <path d="M118 164 C 152 184, 184 166, 172 138 C 162 114, 128 116, 136 142 C 145 170, 190 158, 198 124 C 202 108, 198 98, 203 90" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="0.1 17"/>
+      <path d="M205 38 c-13 0 -23 10 -23 22 c0 15 23 38 23 38 s23 -23 23 -38 c0 -12 -10 -22 -23 -22 z" fill="#fff"/>
+      <circle cx="205" cy="61" r="8" fill="#FC4C02"/>
+    </svg>
+    <div>
+      <h1>komoot<b><span>l</span><span>o</span><span>o</span><span>s</span><span>e</span></b></h1>
+      <p>Cut your tours loose — GPX, no subscription.</p>
+    </div>
+  </header>
+
+  <form id="f">
+    <label for="tour">komoot tour link or ID</label>
+    <input id="tour" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false"
+           placeholder="https://www.komoot.com/tour/…" required>
+    <button id="go">Cut loose</button>
+  </form>
+
+  <div id="status" aria-live="polite"></div>
+
+  <footer>
+    Runs entirely in your browser · tours &amp; shared links only<br>
+    <a href="https://github.com/scorphus/komootloose">github.com/scorphus/komootloose</a> ·
+    <code>pip install komootloose</code>
+  </footer>
+</main>
+
+<script>
+const API = 'https://api.komoot.de/v007/tours';
+const $ = id => document.getElementById(id);
+
+function parseTarget(t) {
+  t = t.trim();
+  if (/^\d+$/.test(t)) return { id: t, token: null };
+  let m = t.match(/\/tour\/(\d+)/);
+  if (m) {
+    let token = null;
+    try { token = new URL(t).searchParams.get('share_token'); } catch (e) {}
+    return { id: m[1], token };
+  }
+  if (/\/smarttour\//.test(t)) throw 'Smarttours are not supported here — use the CLI for those.';
+  throw 'That does not look like a komoot tour link or ID.';
+}
+
+function toGpx(coords) {
+  const pts = coords.map(c =>
+    `<rtept lat="${c.lat}" lon="${c.lng}"><ele>${c.alt}</ele></rtept>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gpx version="1.1" creator="komootloose" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata></metadata>
+  <rte>
+  ${pts}
+  </rte>
+</gpx>`;
+}
+
+const sanitize = n => n.replace(/[<>:"/\\|?*]+/g, '').replace(/\s+/g, ' ').trim();
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function getJson(url) {
+  const r = await fetch(url);
+  if (r.status === 403 || r.status === 404)
+    throw 'komoot says no (' + r.status + ') — tour is private or the share link is wrong.';
+  if (!r.ok) throw 'komoot API error (HTTP ' + r.status + ').';
+  return r.json();
+}
+
+$('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const status = $('status'), btn = $('go');
+  status.innerHTML = '';
+  let target;
+  try { target = parseTarget($('tour').value); }
+  catch (err) { status.innerHTML = '<div class="error">' + esc(String(err)) + '</div>'; return; }
+
+  btn.disabled = true;
+  status.innerHTML = '<div class="trail"><i></i><i></i><i></i><i></i><i></i><span>fetching tour…</span></div>';
+  try {
+    const q = target.token ? '?share_token=' + encodeURIComponent(target.token) : '';
+    const [tour, coords] = await Promise.all([
+      getJson(`${API}/${target.id}${q}`),
+      getJson(`${API}/${target.id}/coordinates${q}`),
+    ]);
+    if (!coords.items || !coords.items.length) throw 'No coordinates in this tour.';
+
+    const name = tour.name || 'route';
+    const file = sanitize(name) + '.gpx';
+    const url = URL.createObjectURL(new Blob([toGpx(coords.items)], { type: 'application/gpx+xml' }));
+    const km = tour.distance ? (tour.distance / 1000).toFixed(1) + ' km' : null;
+
+    status.innerHTML =
+      '<div class="card"><h2>' + esc(name) + '</h2>' +
+      '<div class="meta">' + (km ? '<span><b>' + km + '</b> distance</span>' : '') +
+      '<span><b>' + coords.items.length + '</b> points</span></div>' +
+      '<a class="dl" download="' + esc(file) + '" href="' + url + '">Save GPX</a></div>';
+  } catch (err) {
+    status.innerHTML = '<div class="error">' + esc(String(err)) + '</div>';
+  } finally {
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
