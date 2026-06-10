@@ -1,6 +1,7 @@
-# komootloose
+<img src="assets/logo-wordmark.svg" alt="komootloose" width="520">
 
 Export komoot tours as GPX files from the command line — no subscription needed.
+
 
 ## Usage
 
