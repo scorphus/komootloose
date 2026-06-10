@@ -168,7 +168,14 @@ const sanitize = n => n.replace(/[<>:"/\\|?*]+/g, '').replace(/\s+/g, ' ').trim(
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 async function getJson(url) {
-  const r = await fetch(url);
+  let r;
+  try {
+    r = await fetch(url);
+  } catch {
+    throw navigator.onLine === false
+      ? 'You appear to be offline — reconnect and try again.'
+      : 'Could not reach the komoot API. It may be down, or it may have stopped allowing browser requests — the komootloose CLI should still work.';
+  }
   if (r.status === 403 || r.status === 404)
     throw 'komoot says no (' + r.status + ') — tour is private or the share link is wrong.';
   if (!r.ok) throw 'komoot API error (HTTP ' + r.status + ').';
