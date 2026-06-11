@@ -21,6 +21,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Stamp the deployed commit into the footer
+        run: sed -i "s/__SHA__/${GITHUB_SHA::7}/g" web/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web
