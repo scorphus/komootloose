@@ -64,7 +64,7 @@ button{
 }
 button:active{transform:scale(.97);box-shadow:0 4px 12px rgba(252,76,2,.3)}
 button:disabled{filter:grayscale(.6) brightness(.7);cursor:wait}
-#status{min-height:24px}
+#status:empty{display:none}
 /* marching trail dots */
 .trail{display:flex;gap:10px;align-items:center;padding:6px 2px}
 .trail i{width:9px;height:9px;border-radius:50%;background:var(--orange);animation:march 1s infinite}
@@ -93,10 +93,12 @@ button:disabled{filter:grayscale(.6) brightness(.7);cursor:wait}
 }
 .card a.dl:active{transform:scale(.97)}
 footer{
-  margin-top:auto;padding-top:36px;color:#6e675e;font-size:12.5px;text-align:center;
+  margin-top:auto;color:#6e675e;font-size:12.5px;text-align:center;
   animation:rise .5s .16s ease both;
 }
 footer a{color:var(--dim)}
+footer code{white-space:nowrap}
+footer span{display:block;margin-top:2px}
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 </style>
 </head>
@@ -129,10 +131,10 @@ footer a{color:var(--dim)}
   <div id="status" aria-live="polite"></div>
 
   <footer>
-    Runs entirely in your browser · tours &amp; shared links only<br>
-    <a href="https://github.com/scorphus/komootloose">github.com/scorphus/komootloose</a> ·
-    <code>pip install komootloose</code><br>
-    <a href="https://github.com/scorphus/komootloose/commit/__SHA__"><code>__SHA__</code></a>
+    Runs entirely in your browser · tours &amp; shared links only
+    <span><a href="https://github.com/scorphus/komootloose">github.com/scorphus/komootloose</a></span>
+    <span><code>pip install komootloose</code> ·
+    <a href="https://github.com/scorphus/komootloose/commit/__SHA__"><code>__SHA__</code></a></span>
   </footer>
 </main>
 
